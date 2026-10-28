@@ -11,10 +11,8 @@ en tonos madera, y textos de medición / instalación / garantía.
 
 | Qué | Dónde |
 |---|---|
-| WhatsApp y teléfono reales (`52XXXXXXXXXX`) | `index.html` → `WA_NUMBER`, enlaces `wa.me` y `tel:` del footer y del modal de contacto |
 | Dirección del local | `index.html` → `STORE_LOCATION` |
 | Página de Facebook | `index.html` → enlaces a `facebook.com` |
-| Proyecto de Firebase propio | `index.html` → `FIREBASE_DB_URL` y `FIREBASE_API_KEY`, y `api/*.js` |
 | Catálogo real | `index.html` → el arreglo `PRODUCTS` trae 12 modelos de muestra; bórralos cuando subas los reales desde ⚙ Admin |
 | Dominio | `canonical`, `og:url`, `robots.txt`, `sitemap.xml`, `api/create-preference.js` |
 
