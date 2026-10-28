@@ -1433,18 +1433,29 @@
     }
 
     /* ============================
-       FOOTER — oscuro cálido con acento madera
+       FOOTER — grafito frío + líneas de persiana + acento madera
+       (antes era el mismo degradado vino-negro de DUBREM: se cambió el
+       tono a un grafito azulado, más afín a un taller de carpintería que
+       a una boutique de moda, y se le añadió una textura de líneas finas
+       que evocan las lamas de una persiana)
     ============================ */
     .footer {
-      background: linear-gradient(160deg,#1c0f12 0%,#0c0608 55%,#180d10 100%);
+      background:
+        repeating-linear-gradient(180deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 15px),
+        linear-gradient(160deg,#161a1d 0%,#0a0c0e 55%,#13171a 100%);
       color:rgba(255,255,255,.45); padding:72px 2.5rem 32px;
       position:relative; overflow:hidden;
+    }
+    .footer-top-accent {
+      position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,transparent,var(--rose-light) 20%,var(--rose) 50%,var(--rose-light) 80%,transparent);
+      opacity:.7;
     }
     .footer::before {
       content:'JASP';
       position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
       font-family:var(--ff-display); font-size:clamp(6rem,18vw,16rem);
-      letter-spacing:.01em; color:rgba(255,255,255,.025);
+      letter-spacing:.01em; color:rgba(201,160,99,.04);
       pointer-events:none; white-space:nowrap; user-select:none;
     }
     /* Brand center block */
@@ -1467,12 +1478,11 @@
       margin-bottom: 6px;
     }
     .footer-resenas-title {
-      font-family: var(--ff-head);
-      font-weight: 300;
-      font-style: italic;
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
-      letter-spacing: .04em;
-      color: rgba(255,255,255,.82);
+      font-family: var(--ff-display);
+      font-weight: 600;
+      font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+      letter-spacing: .01em; text-transform: uppercase;
+      color: rgba(255,255,255,.9);
       margin-bottom: 28px;
       line-height: 1;
     }
@@ -1482,12 +1492,26 @@
       gap: 12px;
     }
     .footer-resena-card {
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.07);
-      padding: 18px 16px 16px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 22px 18px 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      position: relative;
+    }
+    .footer-resena-card::before {
+      content: '';
+      position: absolute; top: 0; left: 18px; right: 18px; height: 2px;
+      background: linear-gradient(90deg, var(--rose-light), var(--rose));
+      border-radius: 0 0 3px 3px;
+    }
+    .footer-resena-card::after {
+      content: '”';
+      position: absolute; top: 4px; right: 12px;
+      font-family: var(--ff-display); font-size: 3.6rem; font-weight: 600;
+      color: rgba(255,255,255,.05); line-height: 1; pointer-events: none;
     }
     .footer-resena-stars { font-size: .78rem; letter-spacing: .1em; color: var(--rose-light); }
     .footer-resena-text {
@@ -1559,6 +1583,43 @@
       font-size:.62rem; letter-spacing:.2em; text-transform:uppercase;
       color:rgba(255,255,255,.6);
     }
+
+    /* Mini-heroes: miniaturas de categoría, acceso rápido desde el footer */
+    .footer-minihero {
+      max-width:860px; margin:0 auto 48px;
+      display:grid; grid-template-columns:repeat(5,1fr); gap:10px;
+      position:relative;
+    }
+    .footer-minihero-item {
+      background:none; border:none; padding:0; cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      font-family:var(--ff-body); color:rgba(255,255,255,.55);
+    }
+    .footer-minihero-item img {
+      width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:10px;
+      border:1px solid rgba(255,255,255,.1);
+      transition:transform .25s, border-color .25s, filter .25s;
+      filter:saturate(.85) brightness(.92);
+    }
+    .footer-minihero-item:hover img {
+      transform:translateY(-3px); border-color:var(--rose-light);
+      filter:saturate(1) brightness(1);
+    }
+    .footer-minihero-item span {
+      font-size:.6rem; font-weight:600; letter-spacing:.08em;
+      text-transform:uppercase; text-align:center; line-height:1.3;
+    }
+    @media (max-width:768px) {
+      .footer-minihero {
+        display:flex; overflow-x:auto; gap:14px; margin-bottom:28px;
+        padding:0 2px 4px; scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch; scrollbar-width:none;
+      }
+      .footer-minihero::-webkit-scrollbar { display:none; }
+      .footer-minihero-item { min-width:84px; max-width:84px; flex-shrink:0; scroll-snap-align:start; }
+      .footer-minihero-item span { font-size:.56rem; }
+    }
+
     .footer-divider {
       border:none; border-top:1px solid rgba(255,255,255,.06); margin:0 0 52px;
       position:relative;
@@ -2690,6 +2751,7 @@ function cerrarApertura(){}
 
 <!-- ========== FOOTER ========== -->
 <footer class="footer">
+  <div class="footer-top-accent"></div>
 
   <!-- Marca centrada -->
   <div class="footer-brand">
@@ -2703,6 +2765,30 @@ function cerrarApertura(){}
     <span class="footer-brand-tagline">A la medida de tu espacio</span>
     <p class="footer-brand-sub">Tula de Allende, Hidalgo &nbsp;·&nbsp; Medición e instalación a domicilio</p>
   </div>
+
+  <!-- Mini-heroes de categoría -->
+  <nav class="footer-minihero" aria-label="Categorías">
+      <button class="footer-minihero-item" onclick="showCatalog('aluminio')">
+        <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=300&q=70" alt="Aluminio" loading="lazy">
+        <span>Aluminio</span>
+      </button>
+      <button class="footer-minihero-item" onclick="showCatalog('verticales')">
+        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=300&q=70" alt="Verticales" loading="lazy">
+        <span>Verticales</span>
+      </button>
+      <button class="footer-minihero-item" onclick="showCatalog('panel')">
+        <img src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?auto=format&fit=crop&w=300&q=70" alt="Panel Japonés" loading="lazy">
+        <span>Panel Japonés</span>
+      </button>
+      <button class="footer-minihero-item" onclick="showCatalog('cortinas')">
+        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=300&q=70" alt="Cortinas" loading="lazy">
+        <span>Cortinas</span>
+      </button>
+      <button class="footer-minihero-item" onclick="showCatalog('sheer')">
+        <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=300&q=70" alt="Sheer Elegance" loading="lazy">
+        <span>Sheer Elegance</span>
+      </button>
+  </nav>
 
   <hr class="footer-divider">
 
