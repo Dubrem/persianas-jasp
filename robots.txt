@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://persianas-jasp.vercel.app/sitemap.xml
