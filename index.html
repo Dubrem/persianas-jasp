@@ -31,6 +31,8 @@
     "description": "Venta, fabricación e instalación de persianas y cortinas a la medida en Tula de Allende, Hidalgo. Enrollables, blackout, madera, panel japonés, verticales y motorizadas.",
     "address": {
       "@type": "PostalAddress",
+      "streetAddress": "Blvd. Tula-Tlahuelilpan 20, Iturbe",
+      "postalCode": "42803",
       "addressLocality": "Tula de Allende",
       "addressRegion": "Hidalgo",
       "addressCountry": "MX"
@@ -41,7 +43,7 @@
     "currenciesAccepted": "MXN",
     "paymentAccepted": "Cash, Credit Card, Transfer",
     "areaServed": "Tula de Allende, Tepeji del Rio, Tlahuelilpan, Ixmiquilpan",
-    "hasMap": "https://maps.google.com/?q=Tula+de+Allende+Hidalgo+Mexico"
+    "hasMap": "https://maps.google.com/?q=Blvd.+Tula-Tlahuelilpan+20+Iturbe+42803+Tula+de+Allende+Hidalgo"
   }
   </script>
   <link rel="icon" type="image/png" href="img/favicon-jasp.png">
@@ -2382,7 +2384,7 @@ function cerrarApertura(){}
       <div class="delivery-opts">
         <label class="delivery-opt selected" id="dOpt1">
           <input type="radio" name="dv" value="pickup" checked onchange="setDelivery('pickup')">
-          <div class="delivery-opt-body"><h4>🏪 Recoger en Tienda</h4><p>H Colegio Militar 2, Centro, 42800 Tula de Allende, Hgo. · Lun–Sáb 10–19 h</p></div>
+          <div class="delivery-opt-body"><h4>🏪 Recoger en Tienda</h4><p>Blvd. Tula-Tlahuelilpan 20, Iturbe, 42803 Tula de Allende, Hgo. · Lun–Sáb 9–19 h</p></div>
           <span class="delivery-opt-price">Gratis</span>
         </label>
         <label class="delivery-opt" id="dOpt2">
@@ -2408,30 +2410,32 @@ function cerrarApertura(){}
     <div class="step-panel" id="sp2">
       <h3 class="checkout-title">Método de Pago</h3>
       <div class="pay-method-opts">
-        <div class="pay-opt selected" id="pmMp" onclick="setPayMethod('mp')">
+        <!-- MercadoPago desactivado: para reactivarlo, quita el display:none
+             y vuelve a poner S.payMethod='mp' en startCheckout(). -->
+        <div class="pay-opt" id="pmMp" onclick="setPayMethod('mp')" style="display:none">
           <div style="font-size:1.4rem">💳</div>
           <div>
             <div style="font-weight:700;font-size:.85rem;color:#009EE3">MercadoPago</div>
           </div>
           <div class="pay-opt-check" id="pmMpCheck">✓</div>
         </div>
-        <div class="pay-opt" id="pmBank" onclick="setPayMethod('bank')">
+        <div class="pay-opt selected" id="pmBank" onclick="setPayMethod('bank')">
           <div style="font-size:1.4rem">🏦</div>
           <div>
-            <div style="font-weight:700;font-size:.85rem;color:var(--text-dark)">Transferencia Mercado Pago</div>
-            <div style="font-size:.72rem;color:var(--text-light)">Manual, puede tardar más</div>
+            <div style="font-weight:700;font-size:.85rem;color:var(--text-dark)">Transferencia Interbancaria</div>
+            <div style="font-size:.72rem;color:var(--text-light)">Envía tu comprobante por WhatsApp</div>
           </div>
-          <div class="pay-opt-check" id="pmBankCheck" style="opacity:0">✓</div>
+          <div class="pay-opt-check" id="pmBankCheck">✓</div>
         </div>
       </div>
       <div class="bank-card" id="bankCard" style="display:none;margin-top:12px">
         <h4>🏦 Datos de Transferencia</h4>
-        <div class="bank-row"><span class="bank-lbl">Banco</span><span class="bank-val">Mercado Pago</span></div>
+        <div class="bank-row"><span class="bank-lbl">Banco</span><span class="bank-val">XXX</span></div>
         <div class="bank-row"><span class="bank-lbl">Titular</span><span class="bank-val">PERSIANAS JASP</span></div>
         <div class="bank-row" style="align-items:flex-start">
           <span class="bank-lbl" style="padding-top:3px">CLABE</span>
           <span style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
-            <span class="bank-clabe" data-clabe>722969010264030571</span>
+            <span class="bank-clabe" data-clabe>XXXXXXXXXXXXXXXXXX</span>
             <button type="button" class="btn-copy" onclick="copyClabe(this)">📋 Copiar CLABE</button>
           </span>
         </div>
@@ -2470,10 +2474,10 @@ function cerrarApertura(){}
     <div class="confirm-steps">
       <h4>📋 Pasos para completar tu pago:</h4>
       <ol>
-        <li>Realiza la transferencia a <strong>Mercado Pago</strong></li>
+        <li>Realiza la transferencia interbancaria a <strong>PERSIANAS JASP</strong></li>
         <li>
           <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap">
-            CLABE: <strong data-clabe>722969010264030571</strong>
+            CLABE: <strong data-clabe>XXXXXXXXXXXXXXXXXX</strong>
             <button type="button" class="btn-copy" onclick="copyClabe(this)">📋 Copiar</button>
           </span>
         </li>
@@ -3057,9 +3061,9 @@ const FIREBASE_API_KEY = 'AIzaSyAy6amTHJ_nIRnzCMOmBbwgZbm8zrqvSow';
 // ← Cambia esta dirección por la real de tu tienda
 const SHIP_LOCAL = 80;   // instalación local
 const STORE_LOCATION = {
-  address: 'Calle y número, Centro, 42800 Tula de Allende, Hgo.',   // ← PENDIENTE: dirección real del local
+  address: 'Blvd. Tula-Tlahuelilpan 20, Iturbe, 42803 Tula de Allende, Hgo.',
   hours:   'Lun–Sáb 9:00–19:00 h',
-  maps:    'https://maps.google.com/?q=Tula+de+Allende+Hidalgo',
+  maps:    'https://maps.google.com/?q=Blvd.+Tula-Tlahuelilpan+20+Iturbe+42803+Tula+de+Allende+Hidalgo',
 };
 const DELIVERY_LABELS = {
   pickup:      '🏪 Recoger en tienda',
@@ -5685,7 +5689,10 @@ function startCheckout(){
   if(!S.cart.length){ toast('Tu carrito está vacío','err'); return; }
   if(!S.user){ closeCart(); toast('Inicia sesión para continuar',''); setTimeout(openLoginModal,400); return; }
   closeCart();
-  S.step=1; S.delivery='pickup'; S.shipCost=0; S.payMethod='mp';
+  S.step=1; S.delivery='pickup'; S.shipCost=0; S.payMethod='bank';
+  // La transferencia es el único método visible, así que ya viene elegida
+  // y sus datos deben verse sin que el cliente tenga que tocar la tarjeta.
+  setPayMethod('bank');
   document.querySelector('input[name="dv"][value="pickup"]').checked=true;
   ['dOpt1','dOpt2','dOpt3','dOpt4'].forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.remove('selected'); });
   document.getElementById('dOpt1').classList.add('selected');
@@ -5752,7 +5759,7 @@ async function confirmOrder(){
     return;
   }
 
-  const num='BE-'+String(Date.now()).slice(-6)+'-'+String(Math.floor(Math.random()*900)+100);
+  const num='JASP-'+String(Date.now()).slice(-6)+'-'+String(Math.floor(Math.random()*900)+100);
   document.getElementById('orderNum').textContent=num;
 
   const total = cartSubtotal() + S.shipCost;
@@ -6722,7 +6729,7 @@ function customerOrderCard(o){
       <span class="btn-whatsapp-icon">💬</span> Enviar comprobante por WhatsApp
     </a>
     <p style="font-size:.66rem;color:var(--text-light);text-align:center;margin:7px 0 0;line-height:1.5">
-      Adjunta la captura de tu transferencia o de tu pago en Mercado Pago
+      Adjunta la captura de tu transferencia
     </p>` : '';
 
   return `

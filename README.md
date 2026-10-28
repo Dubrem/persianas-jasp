@@ -11,8 +11,9 @@ en tonos madera, y textos de medición / instalación / garantía.
 
 | Qué | Dónde |
 |---|---|
-| Dirección del local | `index.html` → `STORE_LOCATION` |
 | Página de Facebook | `index.html` → enlaces a `facebook.com` |
+| Datos bancarios (hoy `XXX`) | `index.html` → tarjeta de transferencia del checkout y pasos de la confirmación |
+| MercadoPago | desactivado: `#pmMp` está oculto y `startCheckout()` arranca en transferencia |
 | Catálogo real | `index.html` → el arreglo `PRODUCTS` trae 12 modelos de muestra; bórralos cuando subas los reales desde ⚙ Admin |
 | Dominio | `canonical`, `og:url`, `robots.txt`, `sitemap.xml`, `api/create-preference.js` |
 
