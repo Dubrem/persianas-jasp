@@ -3098,7 +3098,9 @@ async function fbFetch(path, opts={}){
   try{
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 8000);
-    const r = await fetch(`${FIREBASE_DB_URL}/${path}.json`, { signal: ctrl.signal, ...opts });
+    const esc = opts.method && opts.method !== 'GET';
+    const qs  = esc ? await fbAuth() : '';
+    const r = await fetch(`${FIREBASE_DB_URL}/${path}.json${qs}`, { signal: ctrl.signal, ...opts });
     clearTimeout(timer);
     if(!r.ok) return null;
     return await r.json();
@@ -3468,7 +3470,7 @@ async function fbLoadCatHeroes() {
 async function fbSaveCatHero(cat, ids) {
   if (!FIREBASE_DB_URL) return;
   try {
-    await fetch(`${FIREBASE_DB_URL}/meta/categoryHeroes/${cat}.json`, {
+    await fetch(`${FIREBASE_DB_URL}/meta/categoryHeroes/${cat}.json${await fbAuth()}`, {
       method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(ids)
     });
     CAT_HEROES[cat] = ids;
@@ -3511,7 +3513,7 @@ const SAFE_PIC_URL = /^(https?:\/\/|\/|[\w-]+\/)[^\s"'<>]*$/i;
 async function fbSaveProductOverride(fbKey, data){
   if (!FIREBASE_DB_URL) return false;
   const { pics, thumb, ...record } = data;
-  const put = (path, body) => fetch(`${FIREBASE_DB_URL}/${path}.json`, {
+  const put = async (path, body) => fetch(`${FIREBASE_DB_URL}/${path}.json${await fbAuth()}`, {
     method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
   });
   try {
@@ -3559,7 +3561,7 @@ async function fbSetStock(id, stock, hidden){
   if (!FIREBASE_DB_URL) return;
   const prod = PRODUCT_OVERRIDES[id];
   if (prod) { prod.stock = stock; if (hidden !== undefined) prod.hidden = hidden; }
-  const w = (ruta, valor) => fetch(`${FIREBASE_DB_URL}/${ruta}.json`, {
+  const w = async (ruta, valor) => fetch(`${FIREBASE_DB_URL}/${ruta}.json${await fbAuth()}`, {
     method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(valor)
   }).catch(()=>{});
   const tareas = [ w(`products/${id}/stock`, stock), w(`productMeta/${id}/stock`, stock) ];
@@ -3572,8 +3574,9 @@ async function fbSetStock(id, stock, hidden){
 async function fbDeleteProductOverride(fbKey){
   try {
     if(!FIREBASE_DB_URL) return;
+    const qs = await fbAuth();
     await Promise.all(['products','productMeta','productThumb'].map(n =>
-      fetch(`${FIREBASE_DB_URL}/${n}/${fbKey}.json`, { method:'DELETE' })
+      fetch(`${FIREBASE_DB_URL}/${n}/${fbKey}.json${qs}`, { method:'DELETE' })
     ));
   } catch(e){}
 }
@@ -4617,17 +4620,64 @@ function loadCart(){
   } catch(e){}
 }
 
-/* Sesión admin — token Firebase Auth, expira en 1h */
-let _adminToken = null;
-(function(){ try { _adminToken = localStorage.getItem('jasp_admin_token') || null; } catch(e){} })();
+/* Sesión admin — token Firebase Auth, expira en 1h y se renueva solo.
+   Las reglas de la base solo dejan escribir el catálogo con sesión, así que
+   el token viaja como ?auth= en cada escritura protegida. */
+let _adminToken   = null;
+let _adminRefresh = null;
+let _adminExp     = 0;
+(function(){ try {
+  _adminToken   = localStorage.getItem('jasp_admin_token')   || null;
+  _adminRefresh = localStorage.getItem('jasp_admin_refresh') || null;
+  _adminExp     = Number(localStorage.getItem('jasp_admin_exp') || 0);
+} catch(e){} })();
 
-function saveAdminSession(token){
-  _adminToken = token;
-  try { localStorage.setItem('jasp_admin_token', token); localStorage.setItem(LS_ADMIN_SESSION, '1'); } catch(e){}
+function saveAdminSession(data){
+  // Acepta la respuesta completa de Firebase o solo el idToken
+  const token = typeof data === 'string' ? data : data.idToken;
+  _adminToken   = token;
+  _adminRefresh = (typeof data === 'object' && data.refreshToken) || _adminRefresh;
+  const secs    = Number((typeof data === 'object' && data.expiresIn) || 3600);
+  _adminExp     = Date.now() + secs * 1000;
+  try {
+    localStorage.setItem('jasp_admin_token', token);
+    localStorage.setItem('jasp_admin_exp', String(_adminExp));
+    if (_adminRefresh) localStorage.setItem('jasp_admin_refresh', _adminRefresh);
+    localStorage.setItem(LS_ADMIN_SESSION, '1');
+  } catch(e){}
 }
+
+/** Devuelve un idToken vigente, renovándolo si ya caducó. */
+async function getAdminToken(){
+  if (!_adminToken) return null;
+  if (Date.now() < _adminExp - 60000) return _adminToken;   // margen de 1 min
+  if (!_adminRefresh) return _adminToken;                   // sesión vieja: que falle y pida login
+  try {
+    const r = await fetch(`https://securetoken.googleapis.com/v1/token?key=${FIREBASE_API_KEY}`, {
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(_adminRefresh)}`
+    });
+    const d = await r.json();
+    if (!d.id_token) return _adminToken;
+    saveAdminSession({ idToken: d.id_token, refreshToken: d.refresh_token, expiresIn: d.expires_in });
+    return _adminToken;
+  } catch(e){ return _adminToken; }
+}
+
+/** Sufijo ?auth= para las rutas que las reglas protegen. */
+async function fbAuth(){
+  const t = await getAdminToken();
+  return t ? `?auth=${encodeURIComponent(t)}` : '';
+}
+
 function clearAdminSession(){
-  _adminToken = null;
-  try { localStorage.removeItem('jasp_admin_token'); localStorage.removeItem(LS_ADMIN_SESSION); } catch(e){}
+  _adminToken = null; _adminRefresh = null; _adminExp = 0;
+  try {
+    localStorage.removeItem('jasp_admin_token');
+    localStorage.removeItem('jasp_admin_refresh');
+    localStorage.removeItem('jasp_admin_exp');
+    localStorage.removeItem(LS_ADMIN_SESSION);
+  } catch(e){}
 }
 function hasAdminSession(){
   try { return !!_adminToken && localStorage.getItem(LS_ADMIN_SESSION) === '1'; } catch(e){ return false; }
@@ -6035,7 +6085,7 @@ async function doAdminLogin(){
     );
     const data = await r.json();
     if(data.idToken){
-      saveAdminSession(data.idToken);
+      saveAdminSession(data);
       closeAdminLogin();
       openAdmin();
     } else {
