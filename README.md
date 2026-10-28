@@ -5,7 +5,12 @@ checkout, cuentas de cliente y panel de administración.
 
 Misma estructura y motor que el sitio de DUBREM (`~/bella-esencia`), adaptado al giro:
 categorías de persianas y cortinas, filtro por **medida** en lugar de talla, paleta
-en tonos madera, y textos de medición / instalación / garantía.
+en tonos madera, textos de medición / instalación / garantía, y tipografía propia
+(Fraunces + Instrument Serif + Plus Jakarta Sans) para que no se vea como una
+copia de DUBREM.
+
+En el checkout, la entrega solo tiene dos opciones: recoger en tienda o
+**visita técnica** a domicilio (`tecnica` en `DELIVERY_LABELS` y `setDelivery()`).
 
 ## Pendientes antes de publicar
 
