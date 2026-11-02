@@ -3725,11 +3725,16 @@ function getMergedProducts(){
     const ov = PRODUCT_OVERRIDES[`p${p.id}`];
     return ov ? { ...p, ...ov, id: p.id } : { ...p };
   });
-  // 2. Agregar productos nuevos (claves que empiezan con 'new_')
+  // 2. Productos nuevos (claves 'new_<timestamp>'), del más reciente al
+  //    más antiguo. Van ANTES que la base: así el catálogo (y el filtro
+  //    por categoría/sub-categoría, que solo filtra este mismo arreglo sin
+  //    reordenar) muestra lo recién publicado al principio, no hasta el
+  //    final — es lo que ya hacía el panel admin con su orden "Recientes".
   const added = Object.entries(PRODUCT_OVERRIDES)
     .filter(([k]) => k.startsWith('new_'))
-    .map(([k, v]) => ({ ...v, id: k }));
-  return [...base, ...added];
+    .map(([k, v]) => ({ ...v, id: k }))
+    .sort((a, b) => parseInt(String(b.id).slice(4)) - parseInt(String(a.id).slice(4)));
+  return [...added, ...base];
 }
 
 /* ──────────────────────────────────────────────────────
